@@ -28,6 +28,7 @@ mvn io.quarkus:quarkus-maven-plugin:0.13.3:create \
    -DprojectArtifactId=getting-started \
    -DclassName="org.acme.quickstart.GreetingResource" \
    -Dpath="/hello"
+cd getting-started
 mvn package && mvn package -Pnative
 ```
 
@@ -90,7 +91,38 @@ curl $(minikube service quarkus-quickstart --url)/hello
 ```
 The app is running.
 
-## Scale up
+## Scale up / down
+```
+kubectl scale --replicas=20 deployment/quarkus-quickstart
 
+kubectl get pod
+kubectl get deployments
+
+kubectl scale --replicas=1 deployment/quarkus-quickstart
+```
+
+Or via Deployments section of `minikube dashboard`.
 
 ## Update the app
+```
+# do changes in your application
+mvn package -Pnative -Dnative-image.docker-build=true
+
+eval $(minikube docker-env -u)
+docker build -f src/main/docker/Dockerfile.native -t quarkus-quickstart/quickstart:v2.1 .
+docker images
+
+kubectl set image deployment/quarkus-quickstart quarkus-quickstart=quarkus-quickstart/quickstart:v2.1
+kubectl get pod
+
+curl $(minikube service quarkus-quickstart --url)/hello
+```
+
+```
+mvn package -Pnative -Dnative-image.docker-build=true
+
+docker build -f src/main/docker/Dockerfile.native -t quarkus-quickstart/quickstart:v2.2 .
+kubectl set image deployment/quarkus-quickstart quarkus-quickstart=quarkus-quickstart/quickstart:v2.2
+
+curl $(minikube service quarkus-quickstart --url)/hello
+```
