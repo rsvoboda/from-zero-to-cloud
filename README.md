@@ -11,6 +11,12 @@ minikube delete
 minikube start --memory=4096 --cpus=4 --disk-size=40g
 ```
 
+Minikube context for kubectl
+```
+kubectl config use-context minikube
+kubectl get pods --context=minikube
+```
+
 ## First app
 Application based on Quarkus compiled to the native binary.
 ```
