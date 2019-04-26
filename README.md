@@ -126,3 +126,37 @@ kubectl set image deployment/quarkus-quickstart quarkus-quickstart=quarkus-quick
 
 curl $(minikube service quarkus-quickstart --url)/hello
 ```
+
+## Decrease Docker image size
+Currently the Dockerfile.native image is based on fedora-minimal which has size ~105MB.
+We can go even further using "distroless" image - e.g. https://github.com/quarkusio/quarkus-images/tree/graalvm-1.0.0-rc14/distroless which has 17MB. Final image with getting-started app has around 37MB.
+
+```
+docker images | grep quarkus/getting-started
+quarkus/getting-started-distroless  latest   f4594f855dde   About a minute ago  36.9MB
+quarkus/getting-started             latest   57c659fa7991   3 minutes ago       125MB
+```
+
+Custom src/main/docker/Dockerfile.distroless:
+```
+####
+# This Dockerfile is used in order to build a "distroless" container that runs the Quarkus application in native (no JVM) mode
+#
+# Before building the docker image run:
+#
+# mvn package -Pnative -Dnative-image.docker-build=true
+#
+# Then, build the image with:
+#
+# docker build -f src/main/docker/Dockerfile.distroless -t quarkus/getting-started-distroless .
+#
+# Then run the container using:
+#
+# docker run -i --rm -p 8080:8080 quarkus/getting-started-distroless
+#
+###
+FROM cescoffier/native-base:latest
+COPY target/*-runner /application
+EXPOSE 8080
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
+```
