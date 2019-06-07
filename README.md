@@ -160,3 +160,26 @@ COPY target/*-runner /application
 EXPOSE 8080
 CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
 ```
+
+## Minishift
+
+Installation:
+ * https://docs.okd.io/latest/minishift/getting-started/installing.html#installing-with-homebrew
+
+Cannot unmarshal bool into Go struct field:
+ * https://stackoverflow.com/questions/56358247/error-creating-new-host-json-cannot-unmarshal-bool-into-go-struct-field-driver
+ * https://docs.okd.io/latest/minishift/getting-started/setting-up-virtualization-environment.html#setting-up-xhyve-driver
+
+Minishift update
+ * `minishift update`
+
+```
+minishift start --memory=8GB --cpus=4 --disk-size=40GB
+
+# Wait for "OpenShift server started."
+
+# do stuff you want, e.g. https://github.com/tektoncd/pipeline/blob/master/docs/install.md
+
+minishift stop
+minishift delete
+```
